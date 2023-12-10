@@ -1,5 +1,6 @@
 import express from 'express'
 import mus from "mustache-express"
+import router from "./router.js"
 
 
 // INIT
@@ -8,7 +9,7 @@ const app = express()
 // Config
 app.set("views", "./views")  // Set views folder as default folder for templates
 app.set("view engine", "html")  // Use html as template engine
-app.engine('html', mustache())  // Use mustache as template engine
+app.engine('html', mus())  // Use mustache as template engine
 
 
 // Enable routes
