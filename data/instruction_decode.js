@@ -1,4 +1,4 @@
-export default funcs = {
+export const funcs = {
   "100000": "ADD",
   "100001": "ADDU",
   "100100": "AND",
@@ -27,4 +27,32 @@ export default funcs = {
   "001001": "JALR",
   "001000": "JR",
   "001100": "SYSCALL"
+}
+
+export const i_opCode = {
+  "001000": "ADDI",
+  "001001": "ADDIU",
+  "001100": "ANDI",
+  "001111": "LUI",
+  "001101": "ORI",
+  "001110": "XORI",
+  "001010": "SLTI",
+  "001011": "SLTIU",
+  "000100": "BEQ",
+  "000101": "BNE",
+  "000110": "BLEZ",
+  "000111": "BGTZ",
+  "100000": "LB",
+  "100100": "LBU",
+  "100001": "LH",
+  "100101": "LHU",
+  "100011": "LW",
+  "101000": "SB",
+  "101001": "SH",
+  "101011": "SW"
+}
+
+export const j_opCode = {
+  "000010": "J",
+  "000011": "JAL"
 }
