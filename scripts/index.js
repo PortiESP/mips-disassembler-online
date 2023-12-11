@@ -21,14 +21,13 @@ handleInput({ target: { value: "0x00000000" } })
 // -----------------------------------------------------------------------------------------------------------------------------------------
 function parseInstructionInputValue(event) {
   const $element = document.getElementById("instruction-code")
-  let value = $element.value
-  if (value.length > 11) return ($element.value = value.slice(0, 11))
-  if (value.match(/[0-9A-F]{8}/i)) return ($element.value = value.slice(0, 8))
+  if ($element.value.length > 11) return ($element.value = $element.value.slice(0, 11))
+  if ($element.value.match(/[0-9A-F]{8}/i)) return ($element.value = $element.value.slice(0, 8))
 
-  $element.value = value.replace(/[^0-9A-F\-]/gi, "")
-  $element.value = value.toUpperCase()
+  $element.value = $element.value.replace(/[^0-9A-F\-]/gi, "")
+  $element.value = $element.value.toUpperCase()
 
-  if (value.length === 11 || (!value.includes("-") && value.length === 8)) {
+  if ($element.value.length === 11 || (!$element.value.includes("-") && $element.value.length === 8)) {
     return true
   } else {
     resetTable()
@@ -38,13 +37,11 @@ function parseInstructionInputValue(event) {
 
 function parseInstructionAddrInputValue(event) {
   const $element = document.getElementById("instruction-address")
-  let value = $element.value
-  if (value.length > 10) return ($element.value = value.slice(0, 10))
+  if ($element.value.length > 10) return ($element.value = $element.value.slice(0, 10))
 
-  value = value.replace(/[^x0-9A-F]/gi, "")
-  $element.value = value
+  $element.value = $element.value.replace(/[^x0-9A-F]/gi, "")
 
-  if (value.match(/0x[0-9A-F]{8}/i)) {
+  if ($element.value.match(/0x[0-9A-F]{8}/i)) {
     return true
   } else {
     resetTable()
@@ -87,6 +84,11 @@ function parseInstructionCode() {
   else if (opcode === 0x02 || opcode === 0x03) info = parseJ(instruction)
   else info = parseI(instruction)
 
+  // Update the next instruction address
+  document.getElementById("next-ins-addr").innerHTML = `<kbd>0x${info.nextAddr.toString(16).padStart(8, "0")}</kbd>`
+  if (info.type === "I") document.getElementById("next-ins-addr").innerHTML += ` (PC+4), Si se cumple la condición: <kbd>0x${info.branchAddr.toString(16).padStart(8, "0")}</kbd>`
+
+
   console.log("INFO", info)
 }
 
@@ -99,6 +101,7 @@ function resetTable() {
   document.getElementById("table-fields").innerHTML = "Invalid addr or instruction"
   document.getElementById("table-bits").innerHTML = "Invalid addr or instruction"
   document.getElementById("table-regs-values").innerHTML = "Invalid addr or instruction"
+  document.getElementById("next-ins-addr").innerHTML = "Invalid addr or instruction"
 }
 
 // -----------------------------------------------------------------------------------------------------------------------------------------
@@ -113,11 +116,15 @@ function parseR(instruction) {
   const rd = instructionBin.slice(16, 21)
   const shamt = instructionBin.slice(21, 26)
   const funct = instructionBin.slice(26)
+  const pc = parseInt(document.getElementById("instruction-address").value.split("x")[1], 16)
+
 
   const info = {
     op_code,
     fields: [op_code, rs, rt, rd, shamt, funct],
     mnemonic: funcs[funct],
+    nextAddr: pc + 4,  // PC+4
+    type: "R",
   }
 
   // Special case for instructions parameters
@@ -160,6 +167,8 @@ function parseJ(instruction) {
     fields: [op_code, target],
     address: ((pc + 4) & 0xf0000000) | parseInt(target, 2) << 2,
     mnemonic: j_opCode[op_code],
+    nextAddr: this.address,
+    type: "J",
   }
 
   // Special case for instructions type I parameters
@@ -184,6 +193,8 @@ function parseI(instruction) {
   const rs = instructionBin.slice(6, 11)
   const rd = instructionBin.slice(11, 16)
   const immediate = instructionBin.slice(16)
+  const pc = parseInt(document.getElementById("instruction-address").value.split("x")[1], 16)
+  const branchAddr = (pc + 4) + (parseSignedInt(immediate, 2) * 4)
 
   // Error handling
   if (i_opCode[op_code] === undefined) $instruction.style.color = "red"
@@ -192,6 +203,9 @@ function parseI(instruction) {
     op_code,
     fields: [op_code, rs, rd, immediate],
     mnemonic: i_opCode[op_code],
+    nextAddr: pc + 4,
+    branchAddr,
+    type: "I",
   }
 
   if (info.mnemonic === "LUI")
@@ -213,8 +227,6 @@ function parseI(instruction) {
 
   // If it's a branch instruction, calculate the branch address
   if (info.mnemonic[0] === "B"){
-    const pc = parseInt(document.getElementById("instruction-address").value.split("x")[1], 16)
-    const branchAddr = (pc + 4) + (parseSignedInt(immediate, 2) * 4)
     if (!document.getElementById("table-branch-to")) document.getElementById("table-body").innerHTML += `<tr ><td><b>Branch to</b></td><td id="table-branch-to">0x${branchAddr.toString(16).padStart(8, "0")}</td></tr>`
     else document.getElementById("table-branch-to").innerHTML = `0x${branchAddr.toString(16).padStart(8, "0")}`
   }
