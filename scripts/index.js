@@ -1,4 +1,4 @@
-import { funcs, i_opCode, registers_table } from "../data/instruction_decode.js"
+import { funcs, i_opCode, registers_table, j_opCode } from "../data/instruction_decode.js"
 
 const $instruction = document.getElementById("instruction-code")
 const $instructionAddr = document.getElementById("instruction-address")
@@ -14,6 +14,7 @@ $instruction.addEventListener("input", handleInput)
 $instructionAddr.addEventListener("input", handleInput)
 
 // Initial
+$instruction.value = localStorage.getItem("instruction") || ""
 handleInput({ target: { value: "0x00000000" } })
 
 
@@ -55,6 +56,7 @@ function handleInput(e) {
   console.log("Instruction: " + document.getElementById("instruction-code").value || undefined)
   console.log("PC: " + document.getElementById("instruction-address").value || undefined)
 
+  $instruction.style.color = "black"
   const isValidAddr = parseInstructionAddrInputValue(e)
   const isValidIns = parseInstructionInputValue(e)
   if (isValidAddr && isValidIns) parseInstructionCode()
@@ -65,12 +67,19 @@ function parseInstructionCode() {
   $element.value = $element.value.replace(/-/g, "")
   $element.value = $element.value.replace(/(.{2})/g, "$1-")
   $element.value = $element.value.replace(/-$/, "")
+
+  $element.value && localStorage.setItem("instruction", $element.value)
+
   const insCode = $element.value.split("-").reverse().join("")
   const instruction = parseInt(insCode, 16)
   const opcode = instruction >>> 26
 
   document.getElementById("table-ins-addr").innerHTML = document.getElementById("instruction-address").value
   document.getElementById("table-ins-codehex").innerHTML = "0x" + insCode
+
+  console.log("-----------------------------------------------------------------------------------")
+  console.log("Instruction: 0x" + insCode)
+  console.log("Opcode: " + opcode.toString(2).padStart(6, "0"))
 
   // Parse the instruction depending on the opcode
   let info = undefined
@@ -96,6 +105,7 @@ function resetTable() {
 
 // Parse R-Type instructions
 function parseR(instruction) {
+  console.log("Type R")
   const instructionBin = instruction.toString(2).padStart(32, "0")
   const op_code = instructionBin.slice(0, 6)
   const rs = instructionBin.slice(6, 11)
@@ -121,6 +131,8 @@ function parseR(instruction) {
     document.getElementById("table-ins").innerHTML = `<kbd>${info.mnemonic.toLowerCase()} ${registers_table[rd]}</kbd>`
   else if (info.mnemonic === "SYSCALL")
     document.getElementById("table-ins").innerHTML = `<kbd>${info.mnemonic.toLowerCase()}</kbd>`
+  else if (info.mnemonic === "MULT" || info.mnemonic === "MULTU" || info.mnemonic === "DIV" || info.mnemonic === "DIVU")
+    document.getElementById("table-ins").innerHTML = `<kbd>${info.mnemonic.toLowerCase()} ${registers_table[rs]}, ${registers_table[rt]}</kbd>`
   else
     document.getElementById("table-ins").innerHTML = `<kbd>${info.mnemonic.toLowerCase()} ${registers_table[rd]}, ${registers_table[rs]}, ${registers_table[rt]}</kbd>`
   document.getElementById("table-mnemo").innerHTML = info.mnemonic
@@ -135,6 +147,7 @@ function parseR(instruction) {
 
 // Parse J-Type instructions
 function parseJ(instruction) {
+  console.log("Type J")
   // Get instruction address
   const pc = parseInt(document.getElementById("instruction-address").value.split("x")[1], 16)
 
@@ -146,7 +159,7 @@ function parseJ(instruction) {
     op_code,
     fields: [op_code, target],
     address: ((pc + 4) & 0xf0000000) | parseInt(target, 2) << 2,
-    mnemonic: op_code ? "j" : "jal",
+    mnemonic: j_opCode[op_code],
   }
 
   // Special case for instructions type I parameters
@@ -165,11 +178,15 @@ function parseJ(instruction) {
 
 // Parse I-Type instructions
 function parseI(instruction) {
+  console.log("Type I")
   const instructionBin = instruction.toString(2).padStart(32, "0")
   const op_code = instructionBin.slice(0, 6)
   const rs = instructionBin.slice(6, 11)
   const rd = instructionBin.slice(11, 16)
   const immediate = instructionBin.slice(16)
+
+  // Error handling
+  if (i_opCode[op_code] === undefined) $instruction.style.color = "red"
 
   const info = {
     op_code,
@@ -177,8 +194,14 @@ function parseI(instruction) {
     mnemonic: i_opCode[op_code],
   }
 
-
-  document.getElementById("table-ins").innerHTML = `<kbd>${info.mnemonic.toLowerCase()} ${registers_table[rd]}, ${registers_table[rs]}, ${parseSignedInt(immediate, 2)}</kbd>`
+  if (info.mnemonic === "LUI")
+    document.getElementById("table-ins").innerHTML = `<kbd>${info.mnemonic.toLowerCase()} ${registers_table[rd]}, 0x${parseSignedInt(immediate, 2).toString(16).padStart(8, "0")}</kbd>`
+  else if (info.mnemonic === "LW" || info.mnemonic === "SW")
+    document.getElementById("table-ins").innerHTML = `<kbd>${info.mnemonic.toLowerCase()} ${registers_table[rd]}, ${parseSignedInt(immediate, 2)}(${registers_table[rs]})</kbd>`
+  else if (info.mnemonic === "BEQ" || info.mnemonic === "BNE")
+    document.getElementById("table-ins").innerHTML = `<kbd>${info.mnemonic.toLowerCase()} ${registers_table[rs]}, ${registers_table[rd]}, someLabel</kbd> (${parseSignedInt(immediate, 2)})`
+  else
+    document.getElementById("table-ins").innerHTML = `<kbd>${info.mnemonic.toLowerCase()} ${registers_table[rd]}, ${registers_table[rs]}, ${parseSignedInt(immediate, 2)}</kbd>`
   document.getElementById("table-mnemo").innerHTML = info.mnemonic
   document.getElementById("table-type").innerHTML = "Tipo I"
   document.getElementById("table-fields").innerHTML = "COD. OP | RS | RD | IMMEDIATE"
