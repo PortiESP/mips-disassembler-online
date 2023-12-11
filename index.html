@@ -6,10 +6,9 @@
     <h1>Juego Camino de Datos</h1>
     <p>Coge la tarjeta de <b>PC Inicial</b> y consulta dicha dirección en la hoja <b>segmento de texto</b></p>
     <label for="instruction-address">Dirección de la instrucción</label>
-    <input type="text" id="instruction-address" name="instruction-address" placeholder="0x12345678" autofocus/>
+    <input type="text" id="instruction-address" name="instruction-address" placeholder="0x12345678" autofocus value="0x0040000c"/>
     <label for="instruction-code">Bytes de la instrucción: </label>
-    <input type="text" id="instruction-code" name="instruction-code" placeholder="XX-XX-XX-XX" autofocus value="00-00-01-08"/>
-    <span id="little-endian">Instrucción (Little endian): <kbd><span class="hex-instruction"></span></kbd></span>
+    <input type="text" id="instruction-code" name="instruction-code" placeholder="XX-XX-XX-XX" value="2a-18-11-02"/>
     <p><i>Introduce la instrucción en el aula virtual</i></p>
   </div>
   <hr/>
@@ -21,11 +20,23 @@
       </tr>
       <tr>
         <td><b>Código instruccion</b></td>
-        <td id="table-ins-code"></td>
+        <td id="table-ins-codehex"></td>
+      </tr>
+      <tr>
+        <td><b>Instruccion</b></td>
+        <td id="table-ins"></td>
       </tr>
       <tr>
         <td><b>Mnemo</b></td>
         <td id="table-mnemo"></td>
+      </tr>
+      <tr>
+        <td><b>Tipo</b></td>
+        <td id="table-type"></td>
+      </tr>
+      <tr>
+        <td><b>Campos</b></td>
+        <td id="table-fields"></td>
       </tr>
       <tr>
         <td><b>Bits</b></td>
@@ -33,5 +44,5 @@
       </tr>
     </tbody>
   </table>
-  <script src="scripts/index.js"></script>
+  <script src="scripts/index.js" type="module"></script>
 </body>
