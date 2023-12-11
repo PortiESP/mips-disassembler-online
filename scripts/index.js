@@ -127,10 +127,8 @@ function parseR(instruction) {
   document.getElementById("table-type").innerHTML = "Tipo R"
   document.getElementById("table-fields").innerHTML = "COD. OP | RS | RT | RD | SHAMT | FUNCT"
   document.getElementById("table-bits").innerHTML = info.fields.join(" ")
-  // Custom row
   const registers = `RS=${registers_table[rs]}(${parseInt(rs, 2)})  |  RT=${registers_table[rt]}(${parseInt(rt, 2)})  |  RD=${registers_table[rd]}(${parseInt(rd, 2)})`
-  if (!document.getElementById("table-regs-values")) document.getElementById("table-body").innerHTML += `<tr id="table-regs-values"><td><b>Register values</b></td><td>${registers}</td></tr>`
-  else document.getElementById("table-regs-values").innerHTML = registers
+  document.getElementById("table-regs-values").innerHTML = registers
 
   return info
 }
@@ -152,16 +150,14 @@ function parseJ(instruction) {
   }
 
   // Special case for instructions type I parameters
-  document.getElementById("table-ins").innerHTML = `<kbd>${info.mnemonic.toLowerCase()} 0x${info.address.toString(16)}</kbd>`
+  document.getElementById("table-ins").innerHTML = `<kbd>${info.mnemonic.toLowerCase()} 0x${info.address.toString(16).padStart(8, "0")}</kbd>`
   document.getElementById("table-mnemo").innerHTML = info.mnemonic
   document.getElementById("table-type").innerHTML = "Tipo J"
   document.getElementById("table-fields").innerHTML = "COD. OP | TARGET"
   document.getElementById("table-bits").innerHTML = info.fields.join(" ")
   // Custom row
-  if (["beq", "bne", "blez", "bgtz", "bltz", "bgez"].includes(info.mnemonic)){
-    if (!document.getElementById("table-jump-to")) document.getElementById("table-body").innerHTML += `<tr id="table-jump-to"><b>Jump to</b></td><ts>0x${info.address.toString(16)}</ts></tr>`
-    else document.getElementById("table-jump-to").innerHTML = `0x${info.address.toString(16)}`
-  }
+  if (!document.getElementById("table-jump-to")) document.getElementById("table-body").innerHTML += `<tr><td><b>Jump to</b></td><td id="table-jump-to">0x${info.address.toString(16).padStart(8, "0")}</td></tr>`
+  else document.getElementById("table-jump-to").innerHTML = `0x${info.address.toString(16).padStart(8, "0")}`
 
   return info
 }
@@ -188,17 +184,15 @@ function parseI(instruction) {
   document.getElementById("table-bits").innerHTML = info.fields.join(" ")
   // Custom row
   const registers = `RS=${registers_table[rs]}(${parseInt(rs, 2)})  |  RD=${registers_table[rd]}(${parseInt(rd, 2)})  |  IMMEDIATE=${parseSignedInt(immediate, 2)}`
-  const row = `<tr id="table-regs-values"><td><b>Register values</b></td><td>${registers}</td></tr>`
-  if (!document.getElementById("table-regs-values")) document.getElementById("table-body").innerHTML += `<table id="table-regs-values">${row}</table>`
-  else document.getElementById("table-regs-values").innerHTML = row
+  if (!document.getElementById("table-regs-values")) document.getElementById("table-body").innerHTML += `<tr><td><b>Register values</b></td><td id="table-regs-values">${registers}</td></tr>`
+  else document.getElementById("table-regs-values").innerHTML = registers
 
   // If it's a branch instruction, calculate the branch address
   if (info.mnemonic[0] === "B"){
     const pc = parseInt(document.getElementById("instruction-address").value.split("x")[1], 16)
     const branchAddr = (pc + 4) + (parseSignedInt(immediate, 2) * 4)
-    const row = ``
-    if (!document.getElementById("table-branch-to")) document.getElementById("table-body").innerHTML += `<tr id="table-branch-to"><td><b>Branch to</b></td><td>0x${branchAddr.toString(16)}</td></tr>`
-    else document.getElementById("table-branch-to").innerHTML = `0x${branchAddr.toString(16)}`
+    if (!document.getElementById("table-branch-to")) document.getElementById("table-body").innerHTML += `<tr ><td><b>Branch to</b></td><td id="table-branch-to">0x${branchAddr.toString(16).padStart(8, "0")}</td></tr>`
+    else document.getElementById("table-branch-to").innerHTML = `0x${branchAddr.toString(16).padStart(8, "0")}`
   }
   
 
