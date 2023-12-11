@@ -145,7 +145,7 @@ function parseJ(instruction) {
   const info = {
     op_code,
     fields: [op_code, target],
-    address: (pc + 4) | (parseInt(target, 2) << 2),
+    address: ((pc + 4) & 0xf0000000) | parseInt(target, 2) << 2,
     mnemonic: op_code ? "j" : "jal",
   }
 
@@ -155,6 +155,7 @@ function parseJ(instruction) {
   document.getElementById("table-type").innerHTML = "Tipo J"
   document.getElementById("table-fields").innerHTML = "COD. OP | TARGET"
   document.getElementById("table-bits").innerHTML = info.fields.join(" ")
+  document.getElementById("table-regs-values").innerHTML = "TARGET=0x" + parseInt(target, 2).toString(16).padStart(8, "0")
   // Custom row
   if (!document.getElementById("table-jump-to")) document.getElementById("table-body").innerHTML += `<tr><td><b>Jump to</b></td><td id="table-jump-to">0x${info.address.toString(16).padStart(8, "0")}</td></tr>`
   else document.getElementById("table-jump-to").innerHTML = `0x${info.address.toString(16).padStart(8, "0")}`
