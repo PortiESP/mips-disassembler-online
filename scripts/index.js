@@ -21,13 +21,13 @@ handleInput({ target: { value: "0x00000000" } })
 function parseInstructionInputValue(event) {
   const $element = document.getElementById("instruction-code")
   let value = $element.value
-  if (value.length > 11) return (value = value.slice(0, 11))
+  if (value.length > 11) return ($element.value = value.slice(0, 11))
+  if (value.match(/[0-9A-F]{8}/i)) return ($element.value = value.slice(0, 8))
 
-  value = value.replace(/[^0-9A-F\-]/gi, "")
-
+  $element.value = value.replace(/[^0-9A-F\-]/gi, "")
   $element.value = value.toUpperCase()
 
-  if (value.length === 11) {
+  if (value.length === 11 || (!value.includes("-") && value.length === 8)) {
     return true
   } else {
     resetTable()
@@ -61,7 +61,11 @@ function handleInput(e) {
 }
 
 function parseInstructionCode() {
-  const insCode = document.getElementById("instruction-code").value.split("-").reverse().join("")
+  const $element = document.getElementById("instruction-code")
+  $element.value = $element.value.replace(/-/g, "")
+  $element.value = $element.value.replace(/(.{2})/g, "$1-")
+  $element.value = $element.value.replace(/-$/, "")
+  const insCode = $element.value.split("-").reverse().join("")
   const instruction = parseInt(insCode, 16)
   const opcode = instruction >>> 26
 
@@ -106,16 +110,27 @@ function parseR(instruction) {
     mnemonic: funcs[funct],
   }
 
-  document.getElementById("table-ins").innerHTML = `<kbd>${info.mnemonic.toLowerCase()} ${registers_table[rd]}, ${registers_table[rs]}, ${registers_table[rt]}</kbd>`
+  // Special case for instructions parameters
+  if (info.mnemonic === "JR")
+    document.getElementById("table-ins").innerHTML = `<kbd>${info.mnemonic.toLowerCase()} ${registers_table[rs]}}</kbd>`
+  else if (info.mnemonic === "SLL" || info.mnemonic === "SRL")
+    document.getElementById("table-ins").innerHTML = `<kbd>${info.mnemonic.toLowerCase()} ${registers_table[rd]}, ${registers_table[rt]}, ${parseInt(shamt, 2)}</kbd>`
+  else if (info.mnemonic === "JALR")
+    document.getElementById("table-ins").innerHTML = `<kbd>${info.mnemonic.toLowerCase()} ${registers_table[rs]}, ${registers_table[rd]}</kbd>`
+  else if (info.mnemonic === "MFHI" || info.mnemonic === "MFLO")
+    document.getElementById("table-ins").innerHTML = `<kbd>${info.mnemonic.toLowerCase()} ${registers_table[rd]}</kbd>`
+  else if (info.mnemonic === "SYSCALL")
+    document.getElementById("table-ins").innerHTML = `<kbd>${info.mnemonic.toLowerCase()}</kbd>`
+  else
+    document.getElementById("table-ins").innerHTML = `<kbd>${info.mnemonic.toLowerCase()} ${registers_table[rd]}, ${registers_table[rs]}, ${registers_table[rt]}</kbd>`
   document.getElementById("table-mnemo").innerHTML = info.mnemonic
   document.getElementById("table-type").innerHTML = "Tipo R"
   document.getElementById("table-fields").innerHTML = "COD. OP | RS | RT | RD | SHAMT | FUNCT"
   document.getElementById("table-bits").innerHTML = info.fields.join(" ")
   // Custom row
   const registers = `RS=${registers_table[rs]}(${parseInt(rs, 2)})  |  RT=${registers_table[rt]}(${parseInt(rt, 2)})  |  RD=${registers_table[rd]}(${parseInt(rd, 2)})`
-  const row = `<tr id="table-regs-values"><td><b>Register values</b></td><td>${registers}</td></tr>`
-  if (!document.getElementById("table-regs-values")) document.getElementById("table-body").innerHTML += `<table id="table-regs-values">${row}</table>`
-  else document.getElementById("table-regs-values").innerHTML = row
+  if (!document.getElementById("table-regs-values")) document.getElementById("table-body").innerHTML += `<tr id="table-regs-values"><td><b>Register values</b></td><td>${registers}</td></tr>`
+  else document.getElementById("table-regs-values").innerHTML = registers
 
   return info
 }
@@ -136,15 +151,17 @@ function parseJ(instruction) {
     mnemonic: op_code ? "j" : "jal",
   }
 
+  // Special case for instructions type I parameters
   document.getElementById("table-ins").innerHTML = `<kbd>${info.mnemonic.toLowerCase()} 0x${info.address.toString(16)}</kbd>`
   document.getElementById("table-mnemo").innerHTML = info.mnemonic
   document.getElementById("table-type").innerHTML = "Tipo J"
   document.getElementById("table-fields").innerHTML = "COD. OP | TARGET"
   document.getElementById("table-bits").innerHTML = info.fields.join(" ")
   // Custom row
-  const row = `<td><b>Jump to</b></td><td>0x${info.address.toString(16)}</td>`
-  if (!document.getElementById("table-jump-to")) document.getElementById("table-body").innerHTML += `<tr id="table-jump-to">${row}</tr>`
-  else document.getElementById("table-jump-to").innerHTML = row
+  if (["beq", "bne", "blez", "bgtz", "bltz", "bgez"].includes(info.mnemonic)){
+    if (!document.getElementById("table-jump-to")) document.getElementById("table-body").innerHTML += `<tr id="table-jump-to"><b>Jump to</b></td><ts>0x${info.address.toString(16)}</ts></tr>`
+    else document.getElementById("table-jump-to").innerHTML = `0x${info.address.toString(16)}`
+  }
 
   return info
 }
@@ -179,9 +196,9 @@ function parseI(instruction) {
   if (info.mnemonic[0] === "B"){
     const pc = parseInt(document.getElementById("instruction-address").value.split("x")[1], 16)
     const branchAddr = (pc + 4) + (parseSignedInt(immediate, 2) * 4)
-    const row = `<tr id="table-branch-to"><td><b>Branch to</b></td><td>0x${branchAddr.toString(16)}</td></tr>`
-    if (!document.getElementById("table-branch-to")) document.getElementById("table-body").innerHTML += `<table id="table-branch-to">${row}</table>`
-    else document.getElementById("table-branch-to").innerHTML = row
+    const row = ``
+    if (!document.getElementById("table-branch-to")) document.getElementById("table-body").innerHTML += `<tr id="table-branch-to"><td><b>Branch to</b></td><td>0x${branchAddr.toString(16)}</td></tr>`
+    else document.getElementById("table-branch-to").innerHTML = `0x${branchAddr.toString(16)}`
   }
   
 
