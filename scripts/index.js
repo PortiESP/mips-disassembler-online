@@ -167,7 +167,7 @@ function parseJ(instruction) {
     fields: [op_code, target],
     address: ((pc + 4) & 0xf0000000) | parseInt(target, 2) << 2,
     mnemonic: j_opCode[op_code],
-    nextAddr: this.address,
+    nextAddr: ((pc + 4) & 0xf0000000) | parseInt(target, 2) << 2,
     type: "J",
   }
 
