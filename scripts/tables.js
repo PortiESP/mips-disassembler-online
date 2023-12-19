@@ -3,7 +3,7 @@ export default function updateTable(data) {
   document.querySelector("#error-msg").innerHTML = ""
   
   // Get the table
-  const $table = document.querySelector("table")
+  const $table = document.querySelector("#table-content")
   // Remove all rows
   $table.querySelectorAll("tr").forEach((e) => e.remove())
   // Add the rows
@@ -13,7 +13,7 @@ export default function updateTable(data) {
 
 export function appendTable(data){
   // Get the table
-  const $table = document.querySelector("table")
+  const $table = document.querySelector("#table-content")
   // Add the rows
   data.forEach((row) => ($table.innerHTML += `<td>${row[0]}</td><td>${row[1]}</td>`))
 }
@@ -21,7 +21,7 @@ export function appendTable(data){
 
 // Reset table to default
 export function resetTable() {
-  const $table = document.querySelector("table")
+  const $table = document.querySelector("#table-content")
   $table.querySelectorAll("tr").forEach((e) => e.remove())
   document.querySelector("#error-msg").innerHTML = "Invalid input"
   
