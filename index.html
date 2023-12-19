@@ -4,14 +4,15 @@
 <body>
   <main>
     <div class="wrapper">
+      <h1>MIPS Instruction disassembler</h1>
       <div>
         <div class="input-group">
           <label for="instruction-address">Instruction Address ($PC): </label>
-          <input type="text" id="instruction-address" name="instruction-address" placeholder="0x1A2B3C4D" autofocus value=""/>
+          <input type="text" id="instruction-address" name="instruction-address" placeholder="0x1A2B3C4D" autofocus value=""/> <span class="required">*(required)</span>
         </div>
         <div class="input-group">
           <label for="instruction-code">Instruction code (.text): </label>
-          <input type="text" id="instruction-code" name="instruction-code" placeholder="XX-XX-XX-XX" value=""/>
+          <input type="text" id="instruction-code" name="instruction-code" placeholder="XX-XX-XX-XX" value=""/> <span class="required">*(required)</span>
         </div>
       </div>
       <hr/>
@@ -23,5 +24,10 @@
       <div id="error-msg"></div>
     </div>
   </main>
+  <footer>
+    <span class="contribute">
+      Contribute to this project in <a target="_blank" href="https://github.com/PortiESP/mips-disassembler-online">Github</a> @ <a target="_blank" href="https://github.com/PortiESP">PortiESP</a>
+    </span>
+  </footer>
   <script src="scripts/index.js" type="module"></script>
 </body>

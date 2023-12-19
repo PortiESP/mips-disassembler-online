@@ -12,7 +12,6 @@ main{
   align-items: center;
   justify-content: center;
   height: 100vh;
-  z-index: 1;
   position: relative;
   color: #eee;
 
@@ -20,7 +19,7 @@ main{
     display: flex;
     flex-direction: column;
     padding: 30px;
-    min-height: 50vh;
+    min-height: 60vh;
     min-width: 80vh;
 
     & .input-group{
@@ -36,8 +35,17 @@ main{
         padding: 10px;
         border-radius: 5px;
       }
+
+      & span.required{
+        color: #8888;
+        font-size: .9rem;
+      }
     }
   }
+}
+
+h1{
+  margin: 20px 0;
 }
 
 hr{
@@ -63,5 +71,29 @@ table{
 
   & tr td:first-child{
     font-weight: 600;
+  }
+}
+
+
+footer{
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  padding: 40px;  
+  color: #8888;
+  font-size: .8rem;
+
+  & span.contribute{
+    font-style: italic;
+
+    & a{
+      color: rgba(177, 177, 177, 0.533);
+    }
   }
 }

@@ -1,2 +1,0 @@
-- Calculo de los ciclos a partir de la instruccion
-- etapas

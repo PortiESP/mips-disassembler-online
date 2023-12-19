@@ -163,8 +163,8 @@ function parseR(instructionHex) {
   updateTable([
     ["Instruction address ($PC)", `0x${pc.toString(16).padStart(8, "0")}`],
     ["Instruction code (little-endian)", `0x${instructionHex.toString(16).padStart(8, "0")}`],
-    ["Intruction pseudo-code", "<kbd>mnemo rd, rs, rt</kbd>"],
-    ["Intruction", info.instruction],
+    ["I-Type intructions syntax", "<kbd>mnemo rd, rs, rt</kbd>"],
+    ["Intruction disassembled", info.instruction],
     ["Type", "R-Type"],
     ["Fields names", info.fieldsNames.join(" | ")],
     ["Fields bits", info.fieldsBits.join(" | ")],
@@ -206,8 +206,8 @@ function parseJ(instructionHex) {
   updateTable([
     ["Instruction address ($PC)", `0x${pc.toString(16).padStart(8, "0")}`],
     ["Instruction code (little-endian)", `0x${instructionHex.toString(16).padStart(8, "0")}`],
-    ["Intruction pseudo-code", "<kbd>mnemo someLabel</kbd>"],
-    ["Intruction", info.instruction],
+    ["I-Type intructions syntax", "<kbd>mnemo someLabel</kbd>"],
+    ["Intruction disassembled", info.instruction],
     ["Type", "J-Type"],
     ["Fields names", info.fieldsNames.join(" | ")],
     ["Fields bits", info.fieldsBits.join(" | ")],
@@ -274,8 +274,8 @@ function parseI(instructionHex) {
   updateTable([
     ["Instruction address ($PC)", `0x${pc.toString(16).padStart(8, "0")}`],
     ["Instruction code (little-endian)", `0x${instructionHex.toString(16).padStart(8, "0")}`],
-    ["Intruction pseudo-code", "<kbd>mnemo rd, rs, immediate</kbd>"],
-    ["Intruction", info.instruction],
+    ["I-Type intructions syntax", "<kbd>mnemo rd, rs, immediate</kbd>"],
+    ["Intruction disassembled", info.instruction],
     ["Type", "I-Type"],
     ["Fields names", info.fieldsNames.join(" | ")],
     ["Fields bits", info.fieldsBits.join(" | ")],
