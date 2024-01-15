@@ -46,8 +46,10 @@ Follow the official documentation of the server manager you plan to use
 
 ## 💭 Usage
 
+> 🧠 The tool pretents to ease the task of reading an instruction from the `.text` segment. The user is supposed to enter the value of `$PC` (*format: `0xXXXXXXXX`*) in the first textbox. Then the user must enter de values of the bytes stored at the addresses: `0($PC)` , `1($PC)` , `2($PC)` , `3($PC)` (*in the order shown*) in the second textbox. This values can be separated by the character `-` , but this is optional.
+
 1. Enter the instruction code (*big-endian*), separate values using a *dash* (`-`) *E.G.: `78-56-34-12` for the instruction code `0x12345678`*. Optionaly, you can only type the 8 hexadecimal digits and the tool will auto complete with the dashes
-2. Enter the PC value using the prefix `0x`.
+2. Enter the PC value using the prefix `0x`. E.G.: `0x0800001c`
 
 -------------------------------------------------------------
 
