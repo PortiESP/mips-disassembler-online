@@ -46,7 +46,7 @@ Follow the official documentation of the server manager you plan to use
 
 ## 💭 Usage
 
-1. Enter the instruction code (*big-endian*), separate values using a *dash* (`-`) *E.G.: `78-56-34-12` for the instruction code `0x12345678`*.
+1. Enter the instruction code (*big-endian*), separate values using a *dash* (`-`) *E.G.: `78-56-34-12` for the instruction code `0x12345678`*. Optionaly, you can only type the 8 hexadecimal digits and the tool will auto complete with the dashes
 2. Enter the PC value using the prefix `0x`.
 
 -------------------------------------------------------------
