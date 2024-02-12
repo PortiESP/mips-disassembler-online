@@ -16,7 +16,7 @@
 
 ![Alt text](resources/image.png)
 
-> 💡 Try it [here](https://www.0xporti.com/mips-decompiler) online
+> 💡 Try it [here](https://www.0xporti.com/mips-disassembler) online
 
 -------------------------------------------------------------
 
